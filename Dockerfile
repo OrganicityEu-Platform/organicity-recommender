@@ -58,7 +58,8 @@ ADD files/pio-env.sh ${PIO_HOME}/conf
 
 ADD files/deploy_engine.sh .
 ADD files/entrypoint.sh .
-RUN chmod +x entrypoint.sh && chmod +x deploy_engine.sh
+ADD files/retrain.sh .
+RUN chmod +x entrypoint.sh && chmod +x deploy_engine.sh && chmod +x retrain.sh
 
 EXPOSE 7070 8000
 
