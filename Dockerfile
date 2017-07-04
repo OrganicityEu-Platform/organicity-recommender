@@ -48,14 +48,8 @@ ADD files/hbase-site.xml ${PIO_VENDORS}/hbase-${HBASE_VERSION}/conf
 RUN echo 'export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64' >> ${PIO_VENDORS}/hbase-${HBASE_VERSION}/conf/hbase-env.sh
 
 
-# Start PredictionIO
+# PredictionIO config files
 ADD files/pio-env.sh ${PIO_HOME}/conf
-#RUN chmod +x ${PIO_HOME}/conf/pio-env.sh
-#RUN ${PIO_HOME}/conf/pio-env.sh
-#RUN pio-start-all
-#RUN pio-stop-all
-#RUN pio-start-all
-
 ADD files/deploy_engine.sh .
 ADD files/entrypoint.sh .
 ADD files/retrain.sh .
@@ -63,13 +57,9 @@ RUN chmod +x entrypoint.sh && chmod +x deploy_engine.sh && chmod +x retrain.sh
 
 EXPOSE 7070 8000
 
-# Install Universal Recommender engine template
+# Install Similar Product recommender engine template
 RUN apt-get update && apt-get install -y python-pip
 RUN pip install predictionio datetime
-#RUN git clone https://github.com/actionml/universal-recommender.git ${UR_HOME}
 RUN git clone https://github.com/apache/incubator-predictionio-template-similar-product.git ${UR_HOME}
 ADD files/engine.json ${UR_HOME}
-#ADD files/examples.sh ${UR_HOME}
-#RUN chmod +x ${UR_HOME}/examples.sh
-
-#ENTRYPOINT ["/entrypoint.sh"]
+ADD files/import_eventserver.py ${UR_HOME}

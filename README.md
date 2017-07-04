@@ -7,6 +7,8 @@ docker stop fromscratch; docker rm fromscratch
 
 
 ### Manual steps after run (inside Docker image):
+Start PredictionIO and create a new app.
+Look for the app ID in the terminal output.
 ```
 pio-start-all
 pio status
@@ -17,10 +19,12 @@ export ACCESS_KEY=...
 ```
 
 Insert events
-Look at ./examples.sh for inspiration
-
 ```
-python data/import_eventserver.py --access_key $ACCESS_KEY
+python import_eventserver.py --access_key $ACCESS_KEY
+```
+
+Train and deploy
+```
 pio train -- --driver-memory 4g --executor-memory 4g
 pio deploy
 ```
