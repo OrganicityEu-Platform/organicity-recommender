@@ -50,10 +50,8 @@ RUN echo 'export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64' >> ${PIO_VENDORS}/
 
 # PredictionIO config files
 ADD files/pio-env.sh ${PIO_HOME}/conf
-ADD files/deploy_engine.sh .
-ADD files/entrypoint.sh .
 ADD files/retrain.sh .
-RUN chmod +x entrypoint.sh && chmod +x deploy_engine.sh && chmod +x retrain.sh
+RUN chmod +x retrain.sh
 
 EXPOSE 7070 8000
 
@@ -63,3 +61,5 @@ RUN pip install predictionio datetime
 RUN git clone https://github.com/apache/incubator-predictionio-template-similar-product.git ${UR_HOME}
 ADD files/engine.json ${UR_HOME}
 ADD files/import_eventserver.py ${UR_HOME}
+ADD files/boot.sh ${UR_HOME}
+RUN chmod +x ${UR_HOME}/boot.sh
