@@ -1,8 +1,11 @@
 ### How to build the Docker image
 ```
-docker build -t fromscratch .
-docker run -p 8000:8000 -p 7070:7070 --name fromscratch -it fromscratch /bin/bash
-docker stop fromscratch; docker rm fromscratch
+docker build -t piorecommend .
+```
+
+### How to access your new Docker image
+```
+docker run -p 8000:8000 -p 7070:7070 --name piorecommend -it piorecommend /bin/bash
 ```
 
 
@@ -27,4 +30,10 @@ Train and deploy
 ```
 pio train -- --driver-memory 4g --executor-memory 4g
 pio deploy
+```
+
+
+### How to remove your Docker image
+```
+docker stop piorecommend; docker rm piorecommend
 ```
