@@ -11,7 +11,8 @@ pio build
 echo ''
 echo '=======> Create new PredictionIO app'
 pio app new recommenderApp
-ACCESS_KEY=`pio app new recommenderApp | grep 'Access Key:' | awk '{ print $5 }'`
+AK2=$(pio app list)
+ACCESS_KEY=$(echo $AK2 | grep -oEi 'recommenderApp .* \(all\)' | awk '{print $5}')
 export ACCESS_KEY=${ACCESS_KEY}
 echo 'Access key:'
 echo $ACCESS_KEY
