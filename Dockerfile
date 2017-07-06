@@ -63,3 +63,5 @@ ADD files/engine.json ${UR_HOME}
 ADD files/import_eventserver.py ${UR_HOME}
 ADD files/boot.sh ${UR_HOME}
 RUN chmod +x ${UR_HOME}/boot.sh
+
+CMD ${UR_HOME}/boot.sh

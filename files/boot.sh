@@ -2,6 +2,8 @@
 
 set -e
 
+cd /UR
+
 echo ''
 echo '=======> Start PredictionIO'
 pio-start-all
@@ -19,7 +21,7 @@ echo $ACCESS_KEY
 
 echo ''
 echo '=======> Import training data'
-python import_eventserver.py --access_key $ACCESS_KEY
+python /UR/import_eventserver.py --access_key $ACCESS_KEY
 
 echo ''
 echo '=======> Train'
