@@ -1,32 +1,55 @@
 #!/bin/bash
 
-set -e
+function pioStatus() {
+  echo '*** read piostatus'
+  PS=$(pio status | grep 'Your system is all ready to go')
+  if [ -z "$PS" ]
+  then
+    PIOSTATUS=0
+  else
+    PIOSTATUS=1
+  fi
+}
+
+function readAccessKey() {
+  AK2=$(pio app list)
+  ACCESS_KEY=$(echo $AK2 | grep -oEi 'recommenderApp .* \(all\)' | awk '{print $5}')
+}
+
 
 cd /UR
 
-echo ''
-echo '=======> Start PredictionIO'
-pio-start-all
-pio status
-pio build
+pioStatus
+if [ "$PIOSTATUS" -eq "0" ]
+then
+  echo ''
+  echo '=======> Start PredictionIO'
+  set -e
+  pio-stop-all
+  pio-start-all
+  pio status
+  pio build
+else
+  echo ''
+  echo '=======> PredictionIO already started'
+fi
 
 echo ''
 echo '=======> Create new PredictionIO app'
-pio app new recommenderApp
-AK2=$(pio app list)
-ACCESS_KEY=$(echo $AK2 | grep -oEi 'recommenderApp .* \(all\)' | awk '{print $5}')
-export ACCESS_KEY=${ACCESS_KEY}
+readAccessKey
 echo 'Access key:'
 echo $ACCESS_KEY
-
-echo ''
-echo '=======> Import training data'
-python /UR/import_eventserver.py --access_key $ACCESS_KEY
-
-echo ''
-echo '=======> Train'
-pio train -- --driver-memory 4g --executor-memory 4g
-
-echo ''
-echo '=======> Deploy'
-pio deploy
+if [ $ACCESS_KEY ]
+then
+  echo 'Existing pio app'
+else
+  echo 'Creating new pio app'
+  pio app new recommenderApp
+  readAccessKey
+  echo ''
+  echo '=======> Train'
+  pio train -- --driver-memory 4g --executor-memory 4g
+  echo ''
+  echo '=======> Deploy'
+  pio deploy
+fi
