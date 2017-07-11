@@ -5,9 +5,9 @@ function pioStatus() {
   PS=$(pio status | grep 'Your system is all ready to go')
   if [ -z "$PS" ]
   then
-    PIOSTATUS=0
+    PIO_STATE=0
   else
-    PIOSTATUS=1
+    PIO_STATE=1
   fi
 }
 
@@ -20,7 +20,7 @@ function readAccessKey() {
 cd /UR
 
 pioStatus
-if [ "$PIOSTATUS" -eq "0" ]
+if [ "$PIO_STATE" -eq "0" ]
 then
   echo ''
   echo '=======> Start PredictionIO'
@@ -46,6 +46,9 @@ else
   echo 'Creating new pio app'
   pio app new recommenderApp
   readAccessKey
+  echo ''
+  echo '=======> Import training data'
+  python /UR/import_eventserver.py --access_key $ACCESS_KEY
   echo ''
   echo '=======> Train'
   pio train -- --driver-memory 4g --executor-memory 4g
