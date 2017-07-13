@@ -10,5 +10,6 @@
 
 set -e
 
+echo "* Retrain" >> /var/log/retrain.log
 pio train -- --driver-memory 4g --executor-memory 4g
-pio deploy
+pio deploy &

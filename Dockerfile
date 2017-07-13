@@ -50,18 +50,22 @@ RUN echo 'export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64' >> ${PIO_VENDORS}/
 
 # PredictionIO config files
 ADD files/pio-env.sh ${PIO_HOME}/conf
-ADD files/retrain.sh .
-RUN chmod +x retrain.sh
 
 EXPOSE 7070 8000
 
 # Install Similar Product recommender engine template
-RUN apt-get update && apt-get install -y python-pip
+RUN apt-get update && apt-get install -y python-pip cron
 RUN pip install predictionio datetime
 RUN git clone https://github.com/apache/incubator-predictionio-template-similar-product.git ${UR_HOME}
 ADD files/engine.json ${UR_HOME}
 ADD files/import_eventserver.py ${UR_HOME}
 ADD files/boot.sh ${UR_HOME}
 RUN chmod +x ${UR_HOME}/boot.sh
+
+# Retrain cron job
+ADD files/retrain.sh ${UR_HOME}
+RUN chmod +x ${UR_HOME}/retrain.sh
+#ADD files/cronjob /etc/cron.d/retrain-cron
+#RUN chmod +x /etc/cron.d/retrain-cron
 
 CMD ${UR_HOME}/boot.sh

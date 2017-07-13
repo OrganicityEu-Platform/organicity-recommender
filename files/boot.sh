@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function pioStatus() {
-  echo '*** read piostatus'
+  echo 'Read pio status'
   PS=$(pio status | grep 'Your system is all ready to go')
   if [ -z "$PS" ]
   then
@@ -9,6 +9,7 @@ function pioStatus() {
   else
     PIO_STATE=1
   fi
+  echo 'pio status: ' $PIO_STATE
 }
 
 function readAccessKey() {
@@ -56,3 +57,5 @@ else
   echo '=======> Deploy'
   pio deploy
 fi
+
+# cron

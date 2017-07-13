@@ -62,7 +62,7 @@ def import_events(client):
   print("Importing random view events...")
   ve_count = 0;
   for user_id in user_ids:
-    for viewed_item in random.sample(asset_ids, 10):
+    for viewed_item in random.sample(asset_ids, 50):
       client.create_event(
         event="view",
         entity_type="user",
