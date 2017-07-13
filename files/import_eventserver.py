@@ -58,7 +58,7 @@ def import_events(client):
   print("  asset count", counter)
 
 
-  # each user randomly viewed 10 items
+  # each user randomly viewed 50 items
   print("Importing random view events...")
   ve_count = 0;
   for user_id in user_ids:
