@@ -5,7 +5,7 @@ docker build -t piorecommend .
 
 ### How to run and access your new Docker container
 ```
-docker run -p 8000:8000 -p 7070:7070 --name piorecommend -it piorecommend
+docker run -p 8000:8000 -p 7070:7070 -v /path/to/hbasedata:/hbasedata -v /path/to/elasticdata:/elasticdata --name piorecommend -it piorecommend
 ```
 
 This will run the "boot.sh" setup script. Which will build + train + deploy

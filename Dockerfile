@@ -37,6 +37,7 @@ RUN rm elasticsearch-${ELASTICSEARCH_VERSION}.tar.gz
 
 RUN echo 'cluster.name: predictionio' >> ${PIO_HOME}/vendors/elasticsearch-${ELASTICSEARCH_VERSION}/config/elasticsearch.yml
 RUN echo 'network.host: 127.0.0.1' >> ${PIO_HOME}/vendors/elasticsearch-${ELASTICSEARCH_VERSION}/config/elasticsearch.yml
+RUN echo 'path.data: /elasticdata' >> ${PIO_HOME}/vendors/elasticsearch-${ELASTICSEARCH_VERSION}/config/elasticsearch.yml
 
 # HBase - backend of the event data repository.
 RUN curl -O http://mirrors.rackhosting.com/apache/hbase/${HBASE_VERSION}/hbase-${HBASE_VERSION}-bin.tar.gz
