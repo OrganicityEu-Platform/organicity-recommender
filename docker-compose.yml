@@ -13,6 +13,8 @@ web:
     #  volumes:
     #    - ./nginx/cors.conf:/etc/nginx/cors.conf
     #    - ./nginx/location.conf/:/etc/nginx/location.conf
+    #    Inside this file, put shared config - like 'include cors.conf;' if needed.
+    #    - ./nginx/default.ssl.conf.erb/:/var/lib/nginx-conf/default.ssl.conf.erb
 
 recommender:
   build: .
