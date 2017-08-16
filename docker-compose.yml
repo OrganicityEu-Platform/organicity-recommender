@@ -3,7 +3,7 @@ web:
   links:
     - recommender
   environment:
-    DOMAINS: 'recommender.organicity.eu -> http://recommender:7070'
+    DOMAINS: 'recommender.organicity.eu -> http://recommender:7070, recommenderq.organicity.eu -> http://recommender:8000'
     STAGE: 'production' # Set this on local for using self-signed certificate
     #STAGE: local # In development
   restart: unless-stopped
