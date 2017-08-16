@@ -3,6 +3,11 @@
 docker build -t piorecommend .
 ```
 
+### Running with docker compose and nginx frontend which can create SSL certificates with LE
+```
+docker-compose up -d
+```
+
 ### How to run and access your new Docker container
 ```
 docker run -p 8000:8000 -p 7070:7070 -v /path/to/hbasedata:/hbasedata -v /path/to/elasticdata:/elasticdata --name piorecommend -it piorecommend

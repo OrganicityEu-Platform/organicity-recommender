@@ -1,0 +1,27 @@
+web:
+  image: steveltn/https-portal:1
+  links:
+    - recommender
+  environment:
+    DOMAINS: 'recommender.organicity.eu -> http://app:3000'
+    #STAGE: 'production' # Set this on local for using self-signed certificate
+    STAGE: local # In development
+  restart: unless-stopped
+  ports:
+    - 80:80
+    - 443:443
+  #volumes:
+  # Only if we need our custom nginx config
+  #  - ./reco.conf/:/etc/nginx.d/reco.conf
+
+recommender:
+  build: .
+  dockerfile: Dockerfile
+  ports:
+    - 7070:7070
+    - 8000:8000
+
+# If we need our data to be saved on disk, and not only in the container
+#  volumes:
+#    - ./hbasedata/:/hbasedata/
+#    - ./elasticdata/:/elasticdata/
