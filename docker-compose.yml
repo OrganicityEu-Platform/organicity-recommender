@@ -1,29 +1,38 @@
-web:
-  image: steveltn/https-portal:1
-  links:
-    - recommender
-  environment:
-    DOMAINS: 'recommender.organicity.eu -> http://recommender:7070, recommenderq.organicity.eu -> http://recommender:8000'
-    STAGE: 'production' # Set this on local for using self-signed certificate
-    #STAGE: local # In development
-  restart: unless-stopped
-  ports:
-    - 80:80
-    - 443:443
-    #  volumes:
-    #    - ./nginx/cors.conf:/etc/nginx/cors.conf
-    #    - ./nginx/location.conf/:/etc/nginx/location.conf
-    #    Inside this file, put shared config - like 'include cors.conf;' if needed.
-    #    - ./nginx/default.ssl.conf.erb/:/var/lib/nginx-conf/default.ssl.conf.erb
+version: "3"
+services:
 
-recommender:
-  build: .
-  dockerfile: Dockerfile
-  ports:
-    - 7070:7070
-    - 8000:8000
+  web:
+     image: steveltn/https-portal:1
+     environment:
+        DOMAINS: 'recommender.organicity.eu -> http://recommender:7070, recommenderq.organicity.eu -> http://recommender:8000'
+        STAGE: 'production' # Set this on local for using self-signed certificate
+        #STAGE: local # In development
+     ports:
+       - 80:80
+       - 443:443
+     networks:
+       - backend
+       - frontend
+  
+  db:
+    image: postgres:9.6
+    environment:
+      POSTGRES_DB: pio
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 1234
+    networks:
+      - backend
+  
+  recommender:
+    image: synchronicityiot/recommender:latest
+    ports:
+      - 7070:7070
+      - 8000:8000
+    networks:
+      - backend
+    command: ["/UR/wait-for-it.sh", "db:5432", "--", "/UR/boot.sh"]
+  
+networks:
+  frontend:
+  backend:
 
-# If we need our data to be saved on disk, and not only in the container
-#  volumes:
-#    - ./hbasedata/:/hbasedata/
-#    - ./elasticdata/:/elasticdata/

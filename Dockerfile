@@ -1,11 +1,7 @@
-FROM openjdk
-MAINTAINER Alexandra
+FROM openjdk:8-jdk
+MAINTAINER thomas.gilbert@alexandra.dk
 
 ENV PIO_VERSION 0.11.0
-ENV SPARK_VERSION 1.6.3
-ENV ELASTICSEARCH_VERSION 1.7.6
-ENV HBASE_VERSION 1.3.1
-ENV HADOOP_VERSION 2.6.5
 
 ENV PIO_TMP /apache-predictionio-${PIO_VERSION}-incubating
 ENV PIO_HOME /PredictionIO-${PIO_VERSION}-incubating
@@ -23,50 +19,35 @@ RUN rm apache-predictionio-${PIO_VERSION}-incubating.tar.gz
 RUN cd ${PIO_TMP} && ./make-distribution.sh && tar zxf PredictionIO-${PIO_VERSION}-incubating.tar.gz -C /
 RUN rm ${PIO_TMP}/PredictionIO-${PIO_VERSION}-incubating.tar.gz
 RUN mkdir ${PIO_VENDORS}
-ADD files/pio-env.sh ${PIO_HOME}/conf
 
 # Spark - default processing engine for PredictionIO
 RUN wget -q http://d3kbcqa49mib13.cloudfront.net/spark-1.6.3-bin-hadoop2.6.tgz
 RUN tar zxf spark-1.6.3-bin-hadoop2.6.tgz -C ${PIO_VENDORS}
 RUN rm spark-1.6.3-bin-hadoop2.6.tgz
 
-# Elastic - storage backend for the meta data repository
-RUN wget -q https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-${ELASTICSEARCH_VERSION}.tar.gz
-RUN tar zxf elasticsearch-${ELASTICSEARCH_VERSION}.tar.gz -C ${PIO_VENDORS}
-RUN rm elasticsearch-${ELASTICSEARCH_VERSION}.tar.gz
-
-RUN echo 'cluster.name: predictionio' >> ${PIO_HOME}/vendors/elasticsearch-${ELASTICSEARCH_VERSION}/config/elasticsearch.yml
-RUN echo 'network.host: 127.0.0.1' >> ${PIO_HOME}/vendors/elasticsearch-${ELASTICSEARCH_VERSION}/config/elasticsearch.yml
-RUN echo 'path.data: /elasticdata' >> ${PIO_HOME}/vendors/elasticsearch-${ELASTICSEARCH_VERSION}/config/elasticsearch.yml
-
-# HBase - backend of the event data repository.
-RUN curl -O http://mirrors.rackhosting.com/apache/hbase/${HBASE_VERSION}/hbase-${HBASE_VERSION}-bin.tar.gz
-RUN tar zxf hbase-${HBASE_VERSION}-bin.tar.gz -C ${PIO_VENDORS}
-RUN rm hbase-${HBASE_VERSION}-bin.tar.gz
-RUN mkdir ${PIO_VENDORS}/hbase-${HBASE_VERSION}/zookeeper
-ADD files/hbase-site.xml ${PIO_VENDORS}/hbase-${HBASE_VERSION}/conf
-
-RUN echo 'export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64' >> ${PIO_VENDORS}/hbase-${HBASE_VERSION}/conf/hbase-env.sh
-
+# JDBC for PostgreSQL
+RUN wget https://jdbc.postgresql.org/download/postgresql-42.1.4.jar -O ${PIO_HOME}/lib/postgresql-42.1.4.jar
 
 # PredictionIO config files
 ADD files/pio-env.sh ${PIO_HOME}/conf
 
 EXPOSE 7070 8000
+WORKDIR ${UR_HOME}
 
 # Install Similar Product recommender engine template
-RUN apt-get update && apt-get install -y python-pip cron
-RUN pip install predictionio datetime
+RUN apt-get update && apt-get install -y python-pip cron vim
+RUN pip install predictionio datetime requests
 RUN git clone https://github.com/apache/incubator-predictionio-template-similar-product.git ${UR_HOME}
 ADD files/engine.json ${UR_HOME}
-ADD files/import_eventserver.py ${UR_HOME}
+# Build / download template
+RUN pio build
+# Overwrite test data, to copy from Organicity URL
+ADD files/import_eventserver.py ${UR_HOME}/data
 ADD files/boot.sh ${UR_HOME}
 RUN chmod +x ${UR_HOME}/boot.sh
 
-# Retrain cron job
-ADD files/retrain.sh ${UR_HOME}
-RUN chmod +x ${UR_HOME}/retrain.sh
-#ADD files/cronjob /etc/cron.d/retrain-cron
-#RUN chmod +x /etc/cron.d/retrain-cron
+# Add wait-for-it
+RUN wget https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh -O ${UR_HOME}/wait-for-it.sh
+RUN chmod +x ${UR_HOME}/wait-for-it.sh
 
-CMD ${UR_HOME}/boot.sh
+CMD ./boot.sh
