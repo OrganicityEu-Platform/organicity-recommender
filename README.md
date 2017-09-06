@@ -34,13 +34,25 @@ docker run -d \
 It can of course also be started with additional parameters to for example preserve files, by mounting a directory on the host machine or using a data volume.
 ```
 docker run -d \
-   -v ~/postgres-data:/var/lib/postgresql/data \
+   -v ~/piodb:/var/lib/postgresql/data \
    -e POSTGRES_DB=pio \
    -e POSTGRES_USER=admin \
    -e POSTGRES_PASSWORD=1234 \
    --network organicity_backend \
    --name piodb postgres:9.6
 ```
+or
+```
+docker volume create piodb
+docker run -d \
+   -v piodb:/var/lib/postgresql/data \
+   -e POSTGRES_DB=pio \
+   -e POSTGRES_USER=admin \
+   -e POSTGRES_PASSWORD=1234 \
+   --network organicity_backend \
+   --name piodb postgres:9.6
+```
+
 #### Then start the recommender engine
 The docker image has already a built version of the Similar Product engine built it. On the first run of the image, it will import data from OrganiCity by running a updated version of the *import_eventserver.py* script. Note that this will take some time forst time the container is started. Progress can be followed by issuing the following command.
 ```
@@ -53,11 +65,30 @@ docker run -d \
    -e PIO_STORAGE_SOURCES_PGSQL_URL=jdbc:postgresql://piodb/pio \
    -e PIO_STORAGE_SOURCES_PGSQL_USERNAME=admin \
    -e PIO_STORAGE_SOURCES_PGSQL_PASSWORD=1234 \
+   -v /dev/urandom:/dev/random \
    --network organicity_backend \
    --name pioengine \
    synchronicityiot/recommender:latest
 ```
-
+you may have to add the following on some machines. The problem is the random generator on some hosts. Either feed the container your own access key like in the example, or mount the hosts urandom in the container.
+```
+-e INITIAL_ACCESS_KEY=GILr_2yCYe5vZSio0NXkUzkmZvVTNuzOe__PhXgzxn9Bc0VHm5_4VICMNkIclubn \
+or
+-v /dev/urandom:/dev/random \
+```
+#### Optional SSL reverse proxy with lets encrypt
+There are of course a ton of settings, but something like this works.
+```
+docker volume create piossl
+docker run -d \
+   -v piossl:/var/lib/https-portal \
+   -p 80:80 -p 443:443 \
+   -e STAGE=production \
+   -e DOMAINS='recommender.organicity.eu -> http://pioengine:7070, recommenderq.organicity.eu -> http://pioengine:8000' \
+   --network organicity_backend \
+   --name piossl \
+   steveltn/https-portal:1
+```
 #### How to get the access key
 You can always run a command in a docker container, and retreive for example the access token.
 ```
@@ -68,4 +99,8 @@ docker exec -it pioengine pio app list
 ```
 docker stop pioengine
 docker rm pioengine
+```
+### Check stats for docker
+```
+docker stats $(docker ps --format={{.Names}})
 ```

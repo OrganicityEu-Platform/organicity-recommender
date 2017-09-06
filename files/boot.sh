@@ -29,7 +29,6 @@ else
   echo '=======> PredictionIO ready to start'
   set -e
   pio eventserver &
-  sleep 5s
 fi
 
 echo ''
@@ -39,11 +38,21 @@ echo 'Access key:'
 echo $ACCESS_KEY
 if [ $ACCESS_KEY ]
 then
-  echo 'Existing pio app - only calling deploy'
+  echo 'Existing pio app - only calling train and deploy'
+  echo ''
+  echo '=======> Train'
+  pio train -- --driver-memory 4g --executor-memory 4g
+  echo ''
+  echo '=======> Deploy'
   pio deploy
 else
   echo 'Creating new pio app - including import, train and deploy'
-  pio app new recommenderApp
+  if [ $INITIAL_ACCESS_KEY ]
+  then
+    pio app new --access-key $INITIAL_ACCESS_KEY recommenderApp
+  else
+    pio app new recommenderApp
+  fi
   readAccessKey
   echo ''
   echo '=======> Import training data'
