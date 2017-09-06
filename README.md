@@ -20,7 +20,7 @@ To manually start the recommender engine and start a database for it, here are s
 #### First we need a common network
 This network will be used for inter service communication.
 ```
-docker network create backend
+docker network create organicity_backend
 ```
 #### First lets start a database
 ```
@@ -28,7 +28,7 @@ docker run -d \
    -e POSTGRES_DB=pio \
    -e POSTGRES_USER=admin \
    -e POSTGRES_PASSWORD=1234 \
-   --network backend \
+   --network organicity_backend \
    --name piodb postgres:9.6
 ```
 It can of course also be started with additional parameters to for example preserve files, by mounting a directory on the host machine or using a data volume.
@@ -38,7 +38,7 @@ docker run -d \
    -e POSTGRES_DB=pio \
    -e POSTGRES_USER=admin \
    -e POSTGRES_PASSWORD=1234 \
-   --network backend \
+   --network organicity_backend \
    --name piodb postgres:9.6
 ```
 #### Then start the recommender engine
@@ -53,7 +53,7 @@ docker run -d \
    -e PIO_STORAGE_SOURCES_PGSQL_URL=jdbc:postgresql://piodb/pio \
    -e PIO_STORAGE_SOURCES_PGSQL_USERNAME=admin \
    -e PIO_STORAGE_SOURCES_PGSQL_PASSWORD=1234 \
-   --network backend \
+   --network organicity_backend \
    --name pioengine \
    synchronicityiot/recommender:latest
 ```
