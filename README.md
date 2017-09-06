@@ -109,3 +109,8 @@ docker rm pioengine
 ```
 docker stats $(docker ps --format={{.Names}})
 ```
+### Example cron jobs
+```
+0 3 * * * docker restart pioengine
+0 5 * * * docker exec -it piodb pg_dump -d pio -U admin > ~/$(date "+%Y.%m.%d-%H.%M.%S")-backup.sql
+```
