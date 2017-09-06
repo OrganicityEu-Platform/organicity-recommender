@@ -13,8 +13,8 @@ services:
      networks:
        - backend
        - frontend
-  
-  db:
+
+  piodb:
     image: postgres:9.6
     environment:
       POSTGRES_DB: pio
@@ -22,12 +22,12 @@ services:
       POSTGRES_PASSWORD: 1234
     networks:
       - backend
-  
-  recommender:
+
+  pioengine:
     image: synchronicityiot/recommender:latest
     environment:
       PIO_STORAGE_SOURCES_PGSQL_TYPE: jdbc
-      PIO_STORAGE_SOURCES_PGSQL_URL: jdbc:postgresql://db/pio
+      PIO_STORAGE_SOURCES_PGSQL_URL: jdbc:postgresql://piodb/pio
       PIO_STORAGE_SOURCES_PGSQL_USERNAME: admin
       PIO_STORAGE_SOURCES_PGSQL_PASSWORD: 1234
     ports:
@@ -35,9 +35,8 @@ services:
       - 8000:8000
     networks:
       - backend
-    command: ["/UR/wait-for-it.sh", "db:5432", "--", "/UR/boot.sh"]
-  
+    command: ["/UR/wait-for-it.sh", "piodb:5432", "--", "/UR/boot.sh"]
+
 networks:
   frontend:
   backend:
-
