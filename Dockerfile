@@ -35,7 +35,7 @@ EXPOSE 7070 8000
 WORKDIR ${UR_HOME}
 
 # Install Similar Product recommender engine template
-RUN apt-get update && apt-get install -y python-pip cron vim
+RUN apt-get update && apt-get install -y python-pip
 RUN pip install predictionio datetime requests
 RUN git clone https://github.com/apache/incubator-predictionio-template-similar-product.git ${UR_HOME}
 ADD files/engine.json ${UR_HOME}

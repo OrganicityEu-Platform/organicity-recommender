@@ -28,6 +28,7 @@ docker run -d \
    -e POSTGRES_DB=pio \
    -e POSTGRES_USER=admin \
    -e POSTGRES_PASSWORD=1234 \
+   --restart unless-stopped \
    --network organicity_backend \
    --name piodb postgres:9.6
 ```
@@ -38,6 +39,7 @@ docker run -d \
    -e POSTGRES_DB=pio \
    -e POSTGRES_USER=admin \
    -e POSTGRES_PASSWORD=1234 \
+   --restart unless-stopped \
    --network organicity_backend \
    --name piodb postgres:9.6
 ```
@@ -49,6 +51,7 @@ docker run -d \
    -e POSTGRES_DB=pio \
    -e POSTGRES_USER=admin \
    -e POSTGRES_PASSWORD=1234 \
+   --restart unless-stopped \
    --network organicity_backend \
    --name piodb postgres:9.6
 ```
@@ -66,6 +69,7 @@ docker run -d \
    -e PIO_STORAGE_SOURCES_PGSQL_USERNAME=admin \
    -e PIO_STORAGE_SOURCES_PGSQL_PASSWORD=1234 \
    -v /dev/urandom:/dev/random \
+   --restart unless-stopped \
    --network organicity_backend \
    --name pioengine \
    synchronicityiot/recommender:latest
@@ -85,6 +89,7 @@ docker run -d \
    -p 80:80 -p 443:443 \
    -e STAGE=production \
    -e DOMAINS='recommender.organicity.eu -> http://pioengine:7070, recommenderq.organicity.eu -> http://pioengine:8000' \
+   --restart unless-stopped \
    --network organicity_backend \
    --name piossl \
    steveltn/https-portal:1
