@@ -25,6 +25,11 @@ services:
   
   recommender:
     image: synchronicityiot/recommender:latest
+    environment:
+      PIO_STORAGE_SOURCES_PGSQL_TYPE: jdbc
+      PIO_STORAGE_SOURCES_PGSQL_URL: jdbc:postgresql://db/pio
+      PIO_STORAGE_SOURCES_PGSQL_USERNAME: admin
+      PIO_STORAGE_SOURCES_PGSQL_PASSWORD: 1234
     ports:
       - 7070:7070
       - 8000:8000
