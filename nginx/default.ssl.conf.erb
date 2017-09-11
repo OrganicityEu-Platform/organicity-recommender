@@ -20,6 +20,7 @@ server {
 
     <% if domain.upstream %>
     location / {
+        include /etc/nginx/cors.conf;
         proxy_pass <%= domain.upstream %>;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -39,4 +40,6 @@ server {
         index  index.html;
     }
     <% end %>
+    include /etc/nginx/location.conf;
+
 }
